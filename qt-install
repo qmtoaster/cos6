@@ -1,0 +1,87 @@
+#!/bin/sh
+#  Copyright (C) 2013 - Eric Shubert <eric@datamatters.us>
+#
+#  Install QMailToaster packages and configure host
+########################################################################
+# Change Log
+# 12/27/13 shubes - created
+########################################################################
+
+########################################################################
+# install os packages we want that aren't part of the minimal install
+#
+a1_install_non_minimal_os(){
+
+yum -y install \
+      man \
+      ntp \
+
+# setup ntp daemon
+chkconfig ntpd on
+service ntpd start
+}
+
+########################################################################
+# install the QMT packages
+#
+a4_install_qmt_packages(){
+
+echo "$me - installing the QMailToaster packages ..."
+echo "$me - please be patient, especially with clamav and qmail ..."
+
+yum -y install \
+      simscan \
+      dovecot \
+      vqadmin \
+      qmailadmin \
+      isoqlog \
+      qmailmrtg \
+      send-emails \
+      squirrelmail \
+
+}
+########################################################################
+# install non-repo'd perl pkgs
+#
+a8_install_perl_packages(){
+   
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Mail-DomainKeys-1.0-1.el6.rf.noarch.rpm
+yum localinstall perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm perl-Mail-DomainKeys-1.0-1.el6.rf.noarch.rpm
+
+}
+########################################################################
+# main processing begins here
+#
+me=${0##*/}
+myver=v1.0
+
+. qt-whatami -s
+
+if [ $? -ne 0 ]; then
+  qt-whatami
+  echo "$me - qt-whatami failed"
+  exit 1
+fi
+
+a1_install_non_minimal_os
+
+# this is in progress
+# qt-install-dns-resolver
+
+#qt-setup-firewall
+
+qt-install-epel
+
+a8_install_perl_packages
+
+a4_install_qmt_packages
+
+qt-mysql-secure-vpopmail
+
+# setup web server
+chkconfig httpd on
+service httpd start
+
+exit 0
