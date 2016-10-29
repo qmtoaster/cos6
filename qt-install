@@ -45,10 +45,10 @@ yum -y install \
 #
 a8_install_perl_packages(){
    
-wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Mail-SPF-Query-1.999.1-2.el6.rf.noarch.rpm
 wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm
 wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Mail-DomainKeys-1.0-1.el6.rf.noarch.rpm
-yum localinstall perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm perl-Mail-DomainKeys-1.0-1.el6.rf.noarch.rpm
+yum localinstall perl-Mail-SPF-Query-1.999.1-2.el6.rf.noarch.rpm perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm perl-Mail-DomainKeys-1.0-1.el6.rf.noarch.rpm
 
 }
 ########################################################################
