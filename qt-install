@@ -71,7 +71,7 @@ yum -y install \
 ########################################################################
 # install nameserver
 #
-a6_install_nameserver(){
+a6_change_nameserver(){
 
 cp -p /etc/resolv.conf /etc/resolv.conf.bak
 cat /etc/resolv.conf.bak | grep -v nameserver > /etc/resolv.conf
@@ -99,7 +99,7 @@ a2_install_perl_packages
 
 a4_install_qmt_packages
 
-a6_install_nameserver
+a6_change_nameserver
 
 qt-mysql-secure-vpopmail
 
