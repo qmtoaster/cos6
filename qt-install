@@ -5,6 +5,13 @@
 ########################################################################
 # Change Log
 # 12/27/13 shubes - created
+# 10/28/16 Eric Broch - Modified (rpmforge deprecated)
+#                     - Rearranged
+#                     - Added bind, bind-utils install
+#                     - Added resolv to localhost, not permanent on
+#                       on reboot...must modify, otherwise entry in
+#                       /etc/resolv.conf will revert to interface DNS 
+#
 ########################################################################
 
 ########################################################################
@@ -12,15 +19,37 @@
 #
 a1_install_non_minimal_os(){
 
-yum -y install \
-      man \
-      ntp \
+yum -y install man ntp bind-utils epel-release bind
 
 # setup ntp daemon
 chkconfig ntpd on
 service ntpd start
 }
+########################################################################
+# install non-repo'd perl pkgs
+#
+a2_install_perl_packages(){
 
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Razor-Agent-2.85-1.el6.rf.x86_64.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/libev-4.15-1.el6.rf.x86_64.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/geoip-1.4.6-1.el6.rf.x86_64.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Net-CIDR-Lite-0.20-1.2.el6.rf.noarch.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Sys-Hostname-Long-1.4-1.2.el6.rf.noarch.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Mail-SPF-Query-1.999.1-2.el6.rf.noarch.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Mail-DomainKeys-1.0-1.el6.rf.noarch.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-JSON-XS-2.30-1.el6.rf.x86_64.rpm
+wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-common-sense-3.0-1.el6.rf.x86_64.rpm
+yum -y localinstall perl-Mail-DomainKeys-1.0-1.el6.rf.noarch.rpm
+yum -y localinstall perl-Net-CIDR-Lite-0.20-1.2.el6.rf.noarch.rpm perl-Sys-Hostname-Long-1.4-1.2.el6.rf.noarch.rpm
+yum -y localinstall perl-Mail-SPF-Query-1.999.1-2.el6.rf.noarch.rpm
+yum -y localinstall geoip-1.4.6-1.el6.rf.x86_64.rpm
+yum -y localinstall perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm
+yum -y localinstall perl-Razor-Agent-2.85-1.el6.rf.x86_64.rpm
+yum -y localinstall perl-common-sense-3.0-1.el6.rf.x86_64.rpm
+yum -y localinstall perl-JSON-XS-2.30-1.el6.rf.x86_64.rpm
+yum -y localinstall libev-4.15-1.el6.rf.x86_64.rpm
+}
 ########################################################################
 # install the QMT packages
 #
@@ -37,18 +66,17 @@ yum -y install \
       isoqlog \
       qmailmrtg \
       send-emails \
-      squirrelmail \
-
+      squirrelmail
 }
 ########################################################################
-# install non-repo'd perl pkgs
+# install nameserver
 #
-a8_install_perl_packages(){
-   
-wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Mail-SPF-Query-1.999.1-2.el6.rf.noarch.rpm
-wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm
-wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/perl-Mail-DomainKeys-1.0-1.el6.rf.noarch.rpm
-yum localinstall perl-Mail-SPF-Query-1.999.1-2.el6.rf.noarch.rpm perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm perl-Mail-DomainKeys-1.0-1.el6.rf.noarch.rpm
+a6_install_nameserver(){
+
+cp -p /etc/resolv.conf /etc/resolv.conf.bak
+cat /etc/resolv.conf.bak | grep -v nameserver > /etc/resolv.conf
+echo "nameserver 127.0.0.1" >> /etc/resolv.conf
+service named start
 
 }
 ########################################################################
@@ -67,16 +95,11 @@ fi
 
 a1_install_non_minimal_os
 
-# this is in progress
-# qt-install-dns-resolver
-
-#qt-setup-firewall
-
-qt-install-epel
-
-a8_install_perl_packages
+a2_install_perl_packages
 
 a4_install_qmt_packages
+
+a6_install_nameserver
 
 qt-mysql-secure-vpopmail
 
