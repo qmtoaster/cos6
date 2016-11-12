@@ -5,12 +5,10 @@
 ########################################################################
 # Change Log
 # 12/27/13 shubes - created
-# 10/28/16 Eric Broch - Modified (rpmforge deprecated)
+# 10/28/16 Eric Broch - Modified (rpmforge moved to a new master: http://mirror-status.repoforge.org/) reflected in this script.
 #                     - Rearranged
 #                     - Added bind, bind-utils install
-#                     - Added resolv to localhost, not permanent on
-#                       on reboot...must modify, otherwise entry in
-#                       /etc/resolv.conf will revert to interface DNS 
+#                     - Localhost name resolution
 #
 ########################################################################
 
@@ -25,6 +23,7 @@ yum -y install man ntp bind-utils epel-release bind
 chkconfig ntpd on
 service ntpd start
 }
+
 ########################################################################
 # install non-repo'd perl pkgs
 #
@@ -50,14 +49,15 @@ yum -y localinstall perl-common-sense-3.0-1.el6.rf.x86_64.rpm
 yum -y localinstall perl-JSON-XS-2.30-1.el6.rf.x86_64.rpm
 yum -y localinstall libev-4.15-1.el6.rf.x86_64.rpm
 }
+
 ########################################################################
-# install repoforge
+# install repoforge release reflecting new mirrors
 #
-########################################################################
 a3_install_repoforge() {
 wget ftp://rpmfind.net/linux/dag/redhat/el6/en/x86_64/dag/RPMS/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
 yum -y localinstall rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
 }
+
 # install the QMT packages
 #
 a4_install_qmt_packages(){
@@ -75,6 +75,7 @@ yum -y install \
       send-emails \
       squirrelmail
 }
+
 ########################################################################
 # install nameserver
 #
@@ -86,6 +87,7 @@ echo "nameserver 127.0.0.1" >> /etc/resolv.conf
 service named start
 
 }
+
 ########################################################################
 # main processing begins here
 #
